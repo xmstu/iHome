@@ -1,6 +1,21 @@
 # coding:utf-8
 import redis
 
+configs = dict()
+
+
+def route(url):
+    def func1(func):
+        # 添加键值对，key是需要访问的url，value是当这个url需要访问的时候，需要调用的函数引用
+        configs[url] = func
+
+        def func2(*args, **kwargs):
+            return func(*args, **kwargs)
+
+        return func2
+
+    return func1
+
 
 class Config(object):
     """工程配置信息"""
@@ -21,11 +36,13 @@ class Config(object):
     PERMANENT_SESSION_LIFETIME = 86400  # session 的有效期为1天，单位是秒
 
 
+@route('dev')
 class Development(Config):
     """开发模式下的配置"""
     pass
 
 
+@route('pro')
 class Production(Config):
     """生产环境,线上,部署之后"""
     DEBUG = False
@@ -33,14 +50,12 @@ class Production(Config):
     PERMANENT_SESSION_LIFETIME = 86400  # session 的有效期为1天，单位是秒
 
 
+@route('unit')
 class UnitTest(Config):
     """单元测试配置"""
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'mysql://root:mysql@127.0.0.1:3306/iHome_test'
 
 
-configs = {
-    'dev':Development,
-    'pro':Production,
-    'unit':UnitTest,
-}
+# print configs
+

@@ -26,4 +26,9 @@ def get_app(config_name):
 
     Session(app)
 
+    # 注册蓝图
+    import api_1_0
+    app.register_blueprint(api_1_0.api, url_prefix='/api/v1.0')
+
     return app
+
