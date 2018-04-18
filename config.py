@@ -19,7 +19,7 @@ def route(url):
 
 class Config(object):
     """工程配置信息"""
-    SECRET_KEY = "EjpNVSNQTyGi1VvWECj9TvC/+kq3oujee2kTfQUs8yCM6xX9Yjq52v54g+HVoknA"
+    SECRET_KEY = "GApcR/AkqKg3/ujZ/SmEfmnsLWQvyqBFN2ZrSrfooktzd0GL4JylkoVAIikGUML6"
 
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = 'mysql://root:mysql@127.0.0.1:3306/iHome'
