@@ -1,4 +1,5 @@
 # coding:utf-8
+import logging
 import redis
 
 configs = dict()
@@ -39,7 +40,8 @@ class Config(object):
 @route('dev')
 class Development(Config):
     """开发模式下的配置"""
-    pass
+    # 调试级别
+    LOGGING_LEVEL = logging.DEBUG
 
 
 @route('pro')
@@ -49,6 +51,7 @@ class Production(Config):
     SQLALCHEMY_DATABASE_URI = 'mysql://root:mysql@127.0.0.1:3306/iHome'
     PERMANENT_SESSION_LIFETIME = 86400  # session 的有效期为1天，单位是秒
 
+    LOGGING_LEVEL = logging.WARN
 
 @route('unit')
 class UnitTest(Config):

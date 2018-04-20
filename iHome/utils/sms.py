@@ -1,2 +1,76 @@
-# coding:utf-8
-# å‘é€çŸ­ä¿¡
+#coding=gbk
+
+#coding=utf-8
+
+#-*- coding: UTF-8 -*-  
+
+from iHome.libs.yuntongxun.CCPRestSDK import REST
+import ConfigParser
+
+#Ö÷ÕÊºÅ
+accountSid= '8a216da862cc8f910162dbe184ec0bab'
+
+#Ö÷ÕÊºÅToken
+accountToken= 'c5e04de2b6f84a589b18bc6d3e9f540b'
+
+#Ó¦ÓÃId
+appId='8a216da862cc8f910162dbe1853c0bb1'
+
+#ÇëÇóµØÖ·£¬¸ñÊ½ÈçÏÂ£¬²»ĞèÒªĞ´http://
+serverIP='app.cloopen.com'
+
+#ÇëÇó¶Ë¿Ú 
+serverPort='8883'
+
+#REST°æ±¾ºÅ
+softVersion='2013-12-26'
+
+
+class CCP(object):
+    """·â×°µ¥ÀıÀà£¬ÓÃÓÚÍ³Ò»µÄ·¢ËÍ¶ÌĞÅÑéÖ¤Âë"""
+    _singleton = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._singleton:
+            cls._instance = super(CCP, cls).__new__(cls, *args, **kwargs)
+
+            cls._instance.rest = REST(serverIP,serverPort,softVersion)
+            cls._instance.rest.setAccount(accountSid,accountToken)
+            cls._instance.rest.setAppId(appId)
+
+        return cls._instance
+
+    def send_sms_msg(self, to, datas, tempId):
+        """·¢ËÍ¶ÌĞÅÑéÖ¤ÂëµÄÊµÀı·½·¨"""
+        ret = self.rest.sendTemplateSMS(to, datas, tempId)
+
+        if ret.get('statusCode') == '000000':
+            return 1
+        else:
+            return 0
+
+
+
+# ·¢ËÍÄ£°å¶ÌĞÅ
+# @param to ÊÖ»úºÅÂë
+# @param datas ÄÚÈİÊı¾İ ¸ñÊ½ÎªÊı×é ÀıÈç£º{'12','34'}£¬Èç²»ĞèÌæ»»ÇëÌî ''
+# @param $tempId Ä£°åId
+# def sendTemplateSMS(to,datas,tempId):
+#
+#
+#     #³õÊ¼»¯REST SDK
+#     rest = REST(serverIP,serverPort,softVersion)
+#     rest.setAccount(accountSid,accountToken)
+#     rest.setAppId(appId)
+#
+#     result = rest.sendTemplateSMS(to,datas,tempId)
+#     for k,v in result.iteritems():
+#
+#         if k=='templateSMS' :
+#                 for k,s in v.iteritems():
+#                     print '%s:%s' % (k, s)
+#         else:
+#             print '%s:%s' % (k, v)
+#
+# # Ïò17600992168·¢ËÍ¶ÌĞÅÑéÖ¤Âë£¬ÄÚÈİÎª666666£¬5·ÖÖÓºó¹ıÆÚ£¬Ê¹ÓÃidÎª1µÄÄ£°å
+# sendTemplateSMS('15917907641', ['611513', '5'], '1')
