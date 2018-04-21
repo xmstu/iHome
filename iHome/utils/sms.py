@@ -55,22 +55,22 @@ class CCP(object):
 # @param to 手机号码
 # @param datas 内容数据 格式为数组 例如：{'12','34'}，如不需替换请填 ''
 # @param $tempId 模板Id
-# def sendTemplateSMS(to,datas,tempId):
-#
-#
-#     #初始化REST SDK
-#     rest = REST(serverIP,serverPort,softVersion)
-#     rest.setAccount(accountSid,accountToken)
-#     rest.setAppId(appId)
-#
-#     result = rest.sendTemplateSMS(to,datas,tempId)
-#     for k,v in result.iteritems():
-#
-#         if k=='templateSMS' :
-#                 for k,s in v.iteritems():
-#                     print '%s:%s' % (k, s)
-#         else:
-#             print '%s:%s' % (k, v)
-#
-# # 向17600992168发送短信验证码，内容为666666，5分钟后过期，使用id为1的模板
-# sendTemplateSMS('15917907641', ['611513', '5'], '1')
+def sendTemplateSMS(to,datas,tempId):
+
+
+    #初始化REST SDK
+    rest = REST(serverIP,serverPort,softVersion)
+    rest.setAccount(accountSid,accountToken)
+    rest.setAppId(appId)
+
+    result = rest.sendTemplateSMS(to,datas,tempId)
+    for k,v in result.iteritems():
+
+        if k=='templateSMS' :
+                for k,s in v.iteritems():
+                    print '%s:%s' % (k, s)
+        else:
+            print '%s:%s' % (k, v)
+
+# 向17600992168发送短信验证码，内容为666666，5分钟后过期，使用id为1的模板
+sendTemplateSMS('15917907641', ['611513', '5'], '1')

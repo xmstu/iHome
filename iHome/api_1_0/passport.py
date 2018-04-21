@@ -6,6 +6,7 @@ import re
 import logging
 from flask import current_app
 from flask import request, jsonify
+from flask import session
 
 from iHome import redis_store, db
 from iHome.models import User
@@ -41,6 +42,10 @@ def register():
     if not re.match(r'^1[345678][0-9]{9}$', mobile):
         return jsonify(errno=RET.PARAMERR, errmsg='手机号格式错误')
 
+    # 检测手机号是否注册过
+    if User.query.filter(User.mobile == mobile).first():
+        return jsonify(errno=RET.DATAEXIST, errmsg='该手机号已存在')
+
     # 3.获取服务器存储的短信验证码
     try:
         sms_code_server = redis_store.get('SMS:%s' % mobile)
@@ -69,5 +74,69 @@ def register():
         current_app.logger.error(e)
         return jsonify(errno=RET.DBERR, errmsg='保存用户数据失败')
 
+    # 注册即登录，也就是保存注册时生成的数据
+    session['user_id'] = user.id
+    session['name'] = user.name
+    session['mobile'] = user.mobile
+
     # 7.响应注册结果
     return jsonify(errno=RET.OK, errmsg='注册成功')
+
+
+@api.route('/session', methods=["POST"])
+def login():
+    """
+    1.获取参数
+    2.判断参数是否有值
+    3.判断手机号是否合法
+    4.查询数据库用户信息
+    5.用户不存在判断
+    6.校验密码
+    7.使用session保存用户信息
+    :return:
+    """
+
+    # 1.获取参数
+    dict_json = request.get_json()
+    mobile = dict_json.get('mobile')
+    password = dict_json.get('password')
+
+    # 2.判断参数是否有值
+    if not all([dict_json, mobile, password]):
+        return jsonify(errno=RET.PARAMERR, errmsg='参数不完整')
+
+    # 3.判断手机号是否合法
+    if not re.match(u"^1[34578]\d{9}$", mobile):
+        return jsonify(errno=RET.PARAMERR, errmsg="手机号格式不正确")
+
+    # 4.查询数据库用户信息
+    try:
+        user = User.query.filter_by(mobile=mobile).first()
+    except Exception as e:
+        logging.error(e)
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR, errmsg='数据库查询错误')
+
+    # 5.用户不存在判断
+    if user is None:
+        return jsonify(errno=RET.USERERR, errmsg='用户或密码错误')
+
+    # 6.校验密码
+    if not user.check_password(password):
+        return jsonify(errno=RET.LOGINERR, errmsg='用户或密码错误')
+
+    # 7.使用session保存用户信息
+    session['user_id'] = user.id
+    session['mobile'] = user.mobile
+    session['name'] = user.name
+
+    return jsonify(errno=RET.OK, errmsg='登录成功')
+
+
+@api.route('/session', methods=["DELETE"])
+def logout():
+    session.pop('name', None)
+    session.pop('mobile', None)
+    session.pop('user_id', None)
+    return jsonify(errno=RET.OK, errmsg='OK')
+

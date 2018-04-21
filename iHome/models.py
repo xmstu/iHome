@@ -38,6 +38,29 @@ class User(BaseModel, db.Model):
     def password(self, value):
         self.password_hash = generate_password_hash(value)
 
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def to_dict(self):
+        """
+        向视图返回封装响应数据的字典
+        :return:
+        """
+        response_info_dict = {
+            'user_id': self.id,
+            'avatar_url': constants.QINIU_DOMIN_PREFIX + (self.avatar_url if self.avatar_url else ''),
+            'name': self.name,
+            'mobile': self.mobile
+        }
+        return response_info_dict
+
+    def auth_to_dict(self):
+        response_auth_dict = {
+            'real_name': self.real_name,
+            'id_card': self.id_card
+        }
+        return response_auth_dict
+
 
 class Area(BaseModel, db.Model):
     """城区"""
@@ -213,4 +236,3 @@ class Order(BaseModel, db.Model):
             "comment": self.comment if self.comment else ""
         }
         return order_dict
-
