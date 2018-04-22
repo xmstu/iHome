@@ -38,8 +38,8 @@ def upload_image(image_data):
     #     print info
 
 
-if __name__ == '__main__':
-    path = '/home/python/PycharmProjects/iHome/fruit.jpg'
-    with open(path, 'rb') as f:
-        image_data = f.read()
-        upload_image(image_data)
+# if __name__ == '__main__':
+#     path = '/home/python/PycharmProjects/iHome/fruit.jpg'
+#     with open(path, 'rb') as f:
+#         image_data = f.read()
+#         upload_image(image_data)
