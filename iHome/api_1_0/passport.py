@@ -83,6 +83,25 @@ def register():
     return jsonify(errno=RET.OK, errmsg='注册成功')
 
 
+@api.route('/session', methods=['GET'])
+def check_login():
+
+    name = session.get('name')
+    user_id = session.get('user_id')
+
+    try:
+        nickname = User.query.get(user_id).name
+    except Exception as e:
+        logging.error(e)
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR, errmsg='查询数据库失败')
+
+    if not name:
+        return jsonify(errno=RET.SESSIONERR, errmsg='用户未登录')
+    else:
+        return jsonify(errno=RET.OK, errmsg='用户已登录', data={'name':nickname, 'user_id':user_id})
+
+
 @api.route('/session', methods=["POST"])
 def login():
     """

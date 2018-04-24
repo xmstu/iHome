@@ -39,6 +39,17 @@ $(document).ready(function () {
 
             var html_detail = template('house-detail-tmpl', {'house':resp.data});
             $('.detail-con').html(html_detail);
+
+            // 即刻预定按钮的显示
+            if(resp.data.user_id != resp.login_user_id){
+                // 展示即可预定标签
+                $('.book-house').show();
+                $('.book-house').attr('href', 'booking.html?hid='+resp.data.hid);
+            } else {
+                // 隐藏预定标签
+                $('.book-house').hide();
+            }
+
         } else {
             alert(resp.errmsg);
         }
