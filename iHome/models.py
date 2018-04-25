@@ -56,6 +56,7 @@ class User(BaseModel, db.Model):
 
     def auth_to_dict(self):
         response_auth_dict = {
+            'user_id': self.id,
             'real_name': self.real_name,
             'id_card': self.id_card
         }
